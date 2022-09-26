@@ -1,115 +1,157 @@
-const lista_produtos = {
-  produtos: [
-    {
-      id: 1,
-      descricao: "Arroz parboilizado 5Kg",
-      valor: 25.0,
-      marca: "Tio João",
-    },
-    { id: 2, descricao: "Maionese 250gr", valor: 7.2, marca: "Helmans" },
-    { id: 3, descricao: "Iogurte Natural 200ml", valor: 2.5, marca: "Itambé" },
-    {
-      id: 4,
-      descricao: "Batata Maior Palha 300gr",
-      valor: 15.2,
-      marca: "Chipps",
-    },
-    { id: 5, descricao: "Nescau 400gr", valor: 8.0, marca: "Nestlé" },
-  ],
-};
+const knex = require("knex")({
+  client: "pg",
+  debug: true,
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  },
+});
 
 module.exports = {
-  async delete(req, res) {
-    try {
-      const { id } = req.params;
-      const produto = lista_produtos.produtos.filter((el) => el.id != id);
-
-      return res
-        .status(produto ? 200 : 404)
-        .json(
-          produto
-            ? { mensagem: "Produto removido com sucesso." }
-            : { mensagem: "Nenhum produto com o id encontrado." }
-        );
-    } catch (e) {
-      return res.status(500).json({
-        mensagem: "Não foi possível apagar o produto.",
-        error: e,
+  delete(req, res) {
+    const { id } = req.params;
+    knex
+      .from("pokemon")
+      .where({ id })
+      .del()
+      .then((_pokemons) =>
+        res.status(200).json({ mensagem: "Pokemon removido com sucesso." })
+      )
+      .catch((err) => {
+        res.status(500).json({
+          message: "Erro ao apagar o pokemon - " + err.message,
+        });
       });
-    }
   },
 
   async update(req, res) {
-    try {
-      const { id } = req.params;
-      const { descricao, valor, marca } = req.body;
+    const { id } = req.params;
+    const {
+      attack,
+      defense,
+      description,
+      evolutionChain0name,
+      evolutionChain1name,
+      height,
+      imageUrl,
+      name,
+      type,
+      weight,
+    } = req.body;
+    var pokemon = {};
+    if (attack) pokemon.attack = attack;
+    if (defense) pokemon.defense = defense;
+    if (description) pokemon.description = description;
+    if (evolutionChain0name) pokemon.evolutionChain0name = evolutionChain0name;
+    if (evolutionChain1name) pokemon.evolutionChain1name = evolutionChain1name;
+    if (height) pokemon.height = height;
+    if (imageUrl) pokemon.imageUrl = imageUrl;
+    if (name) pokemon.name = name;
+    if (type) pokemon.type = type;
+    if (weight) pokemon.weight = weight;
 
-      var produto = lista_produtos.produtos.find((produto) => produto.id == id);
-
-      if (descricao) produto.descricao = descricao;
-      if (valor) produto.valor = valor;
-      if (marca) produto.marca = marca;
-
-      return res
-        .status(produto ? 200 : 404)
-        .json(
-          produto
-            ? produto
-            : { mensagem: "Nenhum produto com o id encontrado." }
-        );
-    } catch (e) {
-      return res.status(500).json({
-        mensagem: "Não foi possível atualizar o produto.",
-        error: e,
+    knex
+      .returning([
+        "attack",
+        "defense",
+        "description",
+        "evolutionChain0id",
+        "evolutionChain0name",
+        "evolutionChain1id",
+        "evolutionChain1name",
+        "height",
+        "id",
+        "imageUrl",
+        "name",
+        "type",
+        "weight",
+      ])
+      .update(pokemon)
+      .where({ id })
+      .then((pokemons) => res.status(200).json(pokemons))
+      .catch((err) => {
+        res.status(500).json({
+          message: "Erro ao recuperar os pokemons - " + err.message,
+        });
       });
-    }
   },
 
-  async read(req, res) {
-    try {
-      const { id } = req.params;
-
-      const produto = lista_produtos.produtos.find(
-        (produto) => produto.id == id
-      );
-
-      return res
-        .status(produto ? 200 : 404)
-        .json(
-          produto
-            ? produto
-            : { mensagem: "Nenhum produto com o id encontrado." }
-        );
-    } catch (e) {
-      return res.status(500).json({
-        mensagem: "Não foi possível encontrar o produto.",
-        error: e,
+  read(req, res) {
+    const { id } = req.params;
+    knex
+      .select("*")
+      .from("pokemon")
+      .where({ id })
+      .then((pokemons) => res.status(200).json(pokemons))
+      .catch((err) => {
+        res.status(500).json({
+          message: "Erro ao recuperar o pokemon - " + err.message,
+        });
       });
-    }
   },
 
-  async readAll(_req, res) {
-    try {
-      return res.status(200).json(lista_produtos.produtos);
-    } catch (e) {
-      return res.status(500).json({
-        mensagem: "Não foi possível retornar os produtos.",
-        error: e,
+  readAll(_req, res) {
+    knex
+      .select("*")
+      .from("pokemon")
+      .then((pokemons) => res.status(200).json(pokemons))
+      .catch((err) => {
+        res.status(500).json({
+          message: "Erro ao recuperar os pokemons - " + err.message,
+        });
       });
-    }
   },
 
   async create(req, res) {
-    const { descricao, valor, marca } = req.body;
-
-    var produtos = lista_produtos.produtos;
-    const produto = {
-      id: 6,
-      descricao: descricao,
-      valor: valor,
-      marca: marca,
+    const {
+      attack,
+      defense,
+      description,
+      evolutionChain0name,
+      evolutionChain1name,
+      height,
+      imageUrl,
+      name,
+      type,
+      weight,
+    } = req.body;
+    const pokemon = {
+      attack,
+      defense,
+      description,
+      evolutionChain0id: Math.floor(Math.random() * 10 * Math.random() * 100),
+      evolutionChain0name,
+      evolutionChain1id: Math.floor(Math.random() * 10 * Math.random() * 100),
+      evolutionChain1name,
+      height,
+      imageUrl,
+      name,
+      type,
+      weight,
     };
-    produtos.push(produto);
-    return res.json(produto);
+
+    knex
+      .returning([
+        "attack",
+        "defense",
+        "description",
+        "evolutionChain0id",
+        "evolutionChain0name",
+        "evolutionChain1id",
+        "evolutionChain1name",
+        "height",
+        "id",
+        "imageUrl",
+        "name",
+        "type",
+        "weight",
+      ])
+      .insert(pokemon)
+      .then((pokemons) => res.status(200).json(pokemons))
+      .catch((err) => {
+        res.status(500).json({
+          message: "Erro ao recuperar os pokemons - " + err.message,
+        });
+      });
   },
 };

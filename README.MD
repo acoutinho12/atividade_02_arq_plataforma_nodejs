@@ -4,6 +4,10 @@
 
 - André Luis Barbosa Coutinho - 138796
 
+## Template WEB
+
+- [Créditos - Marcos Arrais - Arquitetura para Aplicações Móveis](https://pucminas.instructure.com/courses/86580/files?preview=6237158)
+
 ## Dependencias
 
 - [Node.JS](https://nodejs.org/en/)
