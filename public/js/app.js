@@ -28,7 +28,7 @@ var files_img_pokemons = [];
 function imprimir_pokemon() {
   let html_conteudo = "";
 
-  for (let i = 1; i < data_json.length; i++) {
+  for (let i = 0; i < data_json.length; i++) {
     html_conteudo += card_pokemon(
       i,
       data_json[i].name,

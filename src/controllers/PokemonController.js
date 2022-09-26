@@ -38,30 +38,37 @@ module.exports = {
       type,
       weight,
     } = req.body;
+
     var pokemon = {};
+
     if (attack) pokemon.attack = attack;
     if (defense) pokemon.defense = defense;
     if (description) pokemon.description = description;
-    if (evolutionChain0name) pokemon.evolutionChain0name = evolutionChain0name;
-    if (evolutionChain1name) pokemon.evolutionChain1name = evolutionChain1name;
+    pokemon.evolutionchain0id = Math.floor(
+      Math.random() * 10 * Math.random() * 100
+    );
+    if (evolutionChain0name) pokemon.evolutionchain0name = evolutionChain0name;
+    pokemon.evolutionchain1id = Math.floor(
+      Math.random() * 10 * Math.random() * 100
+    );
+    if (evolutionChain1name) pokemon.evolutionchain1name = evolutionChain1name;
     if (height) pokemon.height = height;
-    if (imageUrl) pokemon.imageUrl = imageUrl;
+    if (imageUrl) pokemon.imageurl = imageUrl;
     if (name) pokemon.name = name;
     if (type) pokemon.type = type;
     if (weight) pokemon.weight = weight;
-
-    knex
+    knex("pokemon")
       .returning([
         "attack",
         "defense",
         "description",
-        "evolutionChain0id",
-        "evolutionChain0name",
-        "evolutionChain1id",
-        "evolutionChain1name",
+        "evolutionchain0id",
+        "evolutionchain0name",
+        "evolutionchain1id",
+        "evolutionchain1name",
         "height",
         "id",
-        "imageUrl",
+        "imageurl",
         "name",
         "type",
         "weight",
@@ -94,6 +101,7 @@ module.exports = {
     knex
       .select("*")
       .from("pokemon")
+      .orderBy('id', 'asc')
       .then((pokemons) => res.status(200).json(pokemons))
       .catch((err) => {
         res.status(500).json({
@@ -115,33 +123,37 @@ module.exports = {
       type,
       weight,
     } = req.body;
-    const pokemon = {
-      attack,
-      defense,
-      description,
-      evolutionChain0id: Math.floor(Math.random() * 10 * Math.random() * 100),
-      evolutionChain0name,
-      evolutionChain1id: Math.floor(Math.random() * 10 * Math.random() * 100),
-      evolutionChain1name,
-      height,
-      imageUrl,
-      name,
-      type,
-      weight,
-    };
 
-    knex
+    var pokemon = {};
+
+    if (attack) pokemon.attack = attack;
+    if (defense) pokemon.defense = defense;
+    if (description) pokemon.description = description;
+    pokemon.evolutionchain0id = Math.floor(
+      Math.random() * 10 * Math.random() * 100
+    );
+    if (evolutionChain0name) pokemon.evolutionchain0name = evolutionChain0name;
+    pokemon.evolutionchain1id = Math.floor(
+      Math.random() * 10 * Math.random() * 100
+    );
+    if (evolutionChain1name) pokemon.evolutionchain1name = evolutionChain1name;
+    if (height) pokemon.height = height;
+    if (imageUrl) pokemon.imageurl = imageUrl;
+    if (name) pokemon.name = name;
+    if (type) pokemon.type = type;
+    if (weight) pokemon.weight = weight;
+    knex("pokemon")
       .returning([
         "attack",
         "defense",
         "description",
-        "evolutionChain0id",
-        "evolutionChain0name",
-        "evolutionChain1id",
-        "evolutionChain1name",
+        "evolutionchain0id",
+        "evolutionchain0name",
+        "evolutionchain1id",
+        "evolutionchain1name",
         "height",
         "id",
-        "imageUrl",
+        "imageurl",
         "name",
         "type",
         "weight",
@@ -150,7 +162,7 @@ module.exports = {
       .then((pokemons) => res.status(200).json(pokemons))
       .catch((err) => {
         res.status(500).json({
-          message: "Erro ao recuperar os pokemons - " + err.message,
+          message: "Erro ao inserir o pokemons - " + err.message,
         });
       });
   },
