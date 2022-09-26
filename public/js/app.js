@@ -3,13 +3,10 @@
 # Globais
 #
 */
-var quant_pokemon = 10;
-var contar = 1;
 var endpoint_pokemon = "https://pokedex-bb36f.firebaseio.com/pokemon.json";
 var tela_detalhe = document.getElementById("conteudo");
 var resultados = document.getElementById("resultados");
 var data_json;
-var CACHE_DINAMICO = "pokedex_dinamico";
 /*
 #
 # Requisição AJAX
@@ -30,7 +27,6 @@ function carregar_pokemon(){
             data_json = JSON.parse(this.responseText);
 
             if(data_json.length > 0){
-                cache_dinamico_json();
                 resultados.className = "row";
                 //Carga inicial
                 imprimir_pokemon();
@@ -47,23 +43,14 @@ var files_img_pokemons = [];
 function imprimir_pokemon(){
 
     let html_conteudo = "";
-    let limite;
-    if((contar+quant_pokemon) < data_json.length){
-        limite = (contar+quant_pokemon);
-    }else{
-        limite = data_json.length;
-        btCarregarMais.style.display = "none";
-    }
 
-    for(let i=contar; i < limite; i++){
+    for(let i=1; i < data_json.length; i++){
         //Montar Card
         html_conteudo+=card_pokemon(i,data_json[i].name,data_json[i].type,data_json[i].imageUrl);  
 
     }
 
     resultados.innerHTML += html_conteudo;
-
-    contar+=quant_pokemon;
 
 }
 
@@ -82,12 +69,6 @@ btVoltar.addEventListener("click", function(){
     setTimeout(function(){document.getElementById("conteudo_img").style.display = "none";}, 500);
 });
 
-let btCarregarMais = document.getElementById("btCarregarMais");
-
-btCarregarMais.addEventListener("click", function(){
-    imprimir_pokemon();
-});
-
 function btCard(id){
     tela_detalhe.style.display = "block";
 
@@ -103,13 +84,6 @@ function btCard(id){
     document.getElementById("conteudo_altura").innerHTML = data_json[id].height;
 }
 
-
-/*
-#
-# Sistema de Template
-#
-*/
-
 function card_pokemon(id,nome,tipo,img){
 
     return '<div class="col-6 col-md-3" onClick="javascript:btCard(\''+id+'\');" data-id="'+id+'">'+
@@ -121,53 +95,6 @@ function card_pokemon(id,nome,tipo,img){
                 '<img src="'+img+'" class="img_pokemon">'+
                 '</div>'+
             '</div>';
-}
-
-/*
-#
-# Cache Dinâmico (json / imgs)
-#
-*/
-var cache_dinamico_json = function(){
-
-    localStorage[CACHE_DINAMICO] = JSON.stringify(data_json);
-}
-
-/*
-#
-# Botao de Instalação
-#
-*/
-
-let janelaInstalacao = null;
-
-const btInstall = document.getElementById("btInstall");
-
-window.addEventListener('beforeinstallprompt', gravarJanela);
-
-function gravarJanela(evt){
-    janelaInstalacao = evt;
-}
-
-let inicializarInstalacao = function(){
-
-    btInstall.removeAttribute("hidden");
-    btInstall.addEventListener("click", function(){
-
-        janelaInstalacao.prompt();
-
-        janelaInstalacao.userChoice.then((choice) => {
-
-            if(choice.outcome === 'accepted'){
-                console.log("Usuário fez a instalação do app");
-            }else{
-                console.log("Usuário NÃO fez a instalação do app");
-            }
-
-        });
-
-    });
-
 }
 
 /*
